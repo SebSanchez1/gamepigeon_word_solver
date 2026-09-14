@@ -1,0 +1,16 @@
+/*
+  Global styles for the whole app.
+  Anything here applies everywhere, since index.css is imported once in main.jsx.
+*/
+
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
