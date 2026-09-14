@@ -11,23 +11,61 @@ body {
 #root {
   min-height: 100vh;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  padding-top: 60px; /* fixed distance from the top, instead of vertical centering */
 }
 
-/* Wraps everything on screen (title + grid) and stacks them vertically,
-   centered. #root only centers ONE child, so this wrapper is that one child. */
+/* Wraps everything on screen (title + tabs + grid), stacked vertically.
+   It now spans the full width of #root so the tab bar (below) has the
+   full screen width to stretch across. */
 .page {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: center; /* keeps the title and grid centered */
   gap: 20px;
   /* space between the title and the grid below it */
+  width: 100%;
 }
 
 .title {
   margin: 0;
   /* browsers add default margin around headings; remove it */
+}
+
+/* Row of tab buttons, sitting side by side. align-self: stretch overrides
+   .page's align-items: center, so this bar ignores that centering and
+   takes the FULL width of .page (i.e. the full screen) instead of just
+   shrinking to fit its content like the title and grid do. */
+.tab-bar {
+  display: flex;
+  align-self: stretch;
+  border-bottom: 2px solid #ddd;
+}
+
+/* Base styling for every tab button (active or not).
+   flex: 1 makes every tab claim an equal share of the tab bar's width,
+   so together they fill the entire row edge-to-edge. */
+.tab {
+  flex: 1;
+  padding: 8px 20px;
+  font-size: 16px;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent; /* reserve space so layout doesn't shift when active */
+  cursor: pointer;
+  color: #666;
+}
+
+/* Extra styling applied only to whichever tab is currently active. */
+.tab-active {
+  color: #000;
+  font-weight: bold;
+  border-bottom: 3px solid #7e14ff; /* matches the purple from the favicon */
+}
+
+/* Holds whatever the active tab shows (the grid, or nothing). */
+.tab-content {
+  display: flex;
+  justify-content: center;
 }
 
 /* The 4x4 letter grid. CSS Grid lays items out in rows/columns automatically,
