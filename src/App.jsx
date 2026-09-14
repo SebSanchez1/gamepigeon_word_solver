@@ -8,14 +8,17 @@ function App() {
   const boxes = Array.from({ length: 16 })
 
   return (
-    <div className="grid">
-      {boxes.map((_, index) => (
-        // React needs a unique "key" prop whenever you render a list of
-        // elements from an array. It's how React tracks which element is
-        // which if the list ever changes (e.g. reordering, adding/removing).
-        // We don't render `key` on screen — it's just for React internally.
-        <div className="tile" key={index}></div>
-      ))}
+    <div className="page">
+      <h1 className="title">GamePigeon Word Solver</h1>
+      <div className="grid">
+        {boxes.map((_, index) => (
+          // React needs a unique "key" prop whenever you render a list of
+          // elements from an array. It's how React tracks which element is
+          // which if the list ever changes (e.g. reordering, adding/removing).
+          // We don't render `key` on screen — it's just for React internally.
+          <div className="tile" key={index}></div>
+        ))}
+      </div>
     </div>
   )
 }
