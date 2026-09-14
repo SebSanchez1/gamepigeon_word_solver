@@ -14,3 +14,19 @@ body {
   align-items: center;
   justify-content: center;
 }
+
+/* The 4x4 letter grid. CSS Grid lays items out in rows/columns automatically,
+   we just have to say how many columns we want and how big each one is. */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 80px); /* 4 columns, each 80px wide */
+  grid-template-rows: repeat(4, 80px); /* 4 rows, each 80px tall */
+  gap: 10px; /* spacing between tiles */
+}
+
+/* A single letter tile. No letter/text yet — just the empty box shape. */
+.tile {
+  background-color: #f0f0f0;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+}
