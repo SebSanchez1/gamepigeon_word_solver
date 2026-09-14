@@ -80,9 +80,31 @@ body {
   /* spacing between tiles */
 }
 
-/* A single letter tile. No letter/text yet — just the empty box shape. */
+/* A single letter tile — now a real <input>, not an empty box.
+   width/height: 100% makes it fill its grid cell (inputs don't stretch to
+   fill a grid cell by default the way a <div> does).
+   box-sizing: border-box keeps the border INSIDE that 100%, instead of
+   adding extra pixels on top of it and overflowing the cell. */
 .tile {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
   background-color: #000000;
   border: 2px solid #272727;
   border-radius: 8px;
+
+  /* Text styling: big, centered, white letters on the black background. */
+  color: #ffffff;
+  font-size: 32px;
+  font-weight: bold;
+  text-align: center;
+  text-transform: uppercase;
+  caret-color: #ffffff; /* the blinking text cursor, otherwise invisible on black */
+}
+
+/* Highlight the tile currently being typed into, instead of the browser's
+   default blue outline (which barely shows up on a black box). */
+.tile:focus {
+  outline: none;
+  border-color: #7e14ff;
 }
