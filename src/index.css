@@ -114,6 +114,12 @@ body {
   border-color: #7e14ff;
 }
 
+/* Groups Calculate and Reset side by side. */
+.button-row {
+  display: flex;
+  gap: 12px;
+}
+
 .calculate-button {
   padding: 10px 28px;
   font-size: 16px;
@@ -125,10 +131,24 @@ body {
   cursor: pointer;
 }
 
-/* :disabled matches the button only while its `disabled` prop is true
+/* Reset is visually secondary to Calculate — an outline instead of a solid
+   fill, so it doesn't compete for attention with the main action. */
+.reset-button {
+  padding: 10px 28px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #7e14ff;
+  background-color: #ffffff;
+  border: 2px solid #7e14ff;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* :disabled matches a button only while its `disabled` prop is true
    (i.e. while we're waiting on the server) — dims it and removes the
    pointer cursor, as a visual "can't click me right now" signal. */
-.calculate-button:disabled {
+.calculate-button:disabled,
+.reset-button:disabled {
   opacity: 0.6;
   cursor: default;
 }

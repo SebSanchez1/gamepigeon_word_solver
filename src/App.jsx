@@ -1,4 +1,12 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+
+// Where to send the "solve this grid" request. Vite sets import.meta.env.DEV
+// to true only while running "npm run dev" locally, and false in a real
+// build (which is what Vercel deploys). Locally, the Python side is our own
+// separate Flask server on port 8000. In production, it's the api/solve.py
+// serverless function living on the SAME domain as the site itself, so a
+// plain relative path ("/api/solve") is enough to reach it there.
+const SOLVE_URL = import.meta.env.DEV ? 'http://localhost:8000/solve' : '/api/solve'
 
 // Describes the 3 tabs: a unique "id" (used internally to track which is
 // active) and a "label" (the text actually shown on screen).
@@ -91,7 +99,7 @@ function App() {
     try {
       // fetch() sends an HTTP request. `await` pauses this function (not
       // the whole app) until the response comes back.
-      const response = await fetch('http://localhost:8000/solve', {
+      const response = await fetch(SOLVE_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         // The server expects JSON text, not a raw JS array/object, so we
@@ -116,6 +124,35 @@ function App() {
       // guarantees we never get stuck showing "Solving..." forever.
       setIsLoading(false)
     }
+  }
+
+  // useEffect runs side effects — things that reach outside of just
+  // "render some JSX," like this: automatically watching `letters` and
+  // triggering the solve as soon as every tile has something in it.
+  //
+  // The array at the end ([letters]) is the DEPENDENCY LIST: it tells
+  // React "only re-run this effect after a render where `letters` is
+  // different from last time" — not on every single re-render. Since
+  // handleLetterChange always replaces `letters` with a new array, typing
+  // a letter always counts as "different," so this fires right after the
+  // 16th box gets filled in.
+  useEffect(() => {
+    const isGridFull = letters.every((letter) => letter !== '')
+    if (isGridFull) {
+      handleCalculate()
+    }
+    // (No cleanup function needed here — this effect doesn't set up
+    // anything, like a timer or subscription, that would need tearing down.)
+  }, [letters])
+
+  // Called when the Reset button is clicked. Clears everything back to a
+  // blank slate: an empty grid, no results, no error — as if the page had
+  // just loaded — then puts the cursor back in the first tile.
+  function handleReset() {
+    setLetters(Array(16).fill(''))
+    setWords(null)
+    setError(null)
+    inputRefs.current[0]?.focus()
   }
 
   // Called whenever the user types in tile number `index`.
@@ -208,9 +245,14 @@ function App() {
 
       {activeTab === 'wordhunt' && (
         <>
-          <button className="calculate-button" onClick={handleCalculate} disabled={isLoading}>
-            {isLoading ? 'Solving...' : 'Calculate'}
-          </button>
+          <div className="button-row">
+            <button className="calculate-button" onClick={handleCalculate} disabled={isLoading}>
+              {isLoading ? 'Solving...' : 'Calculate'}
+            </button>
+            <button className="reset-button" onClick={handleReset} disabled={isLoading}>
+              Reset
+            </button>
+          </div>
 
           {error && <p className="error-message">{error}</p>}
 
