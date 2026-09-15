@@ -190,16 +190,32 @@ function App() {
             <div className="results">
               <p>{words.length} words found</p>
               <ul className="word-list">
-                {words.map((word) => (
-                  <li key={word} className="word-item">
-                    <span className="word-text">{word}</span>
-                    {/* A small, currently-decorative 4x4 grid — no letters,
-                        no path shown yet. Later this is where we'd highlight
-                        which tiles spell out this specific word. */}
+                {/* Each `word` from the server is now an object, not a plain
+                    string: { word: "cat", path: [4, 0, 8] }. `path` is the
+                    ordered list of the 16-cell indices that spell it out —
+                    path[0] is the tile the word STARTS on. */}
+                {words.map((entry) => (
+                  <li key={entry.word} className="word-item">
+                    <span className="word-text">{entry.word}</span>
                     <div className="mini-grid">
-                      {MINI_GRID_CELLS.map((_, index) => (
-                        <div className="mini-tile" key={index}></div>
-                      ))}
+                      {MINI_GRID_CELLS.map((_, index) => {
+                        // Which color (if any) does THIS cell get for THIS
+                        // word? The very first tile in the path is the
+                        // starting letter; every other tile on the path is
+                        // the rest of the word; anything not in the path
+                        // stays the default black (no extra class).
+                        const isStart = entry.path[0] === index
+                        const isOnPath = entry.path.includes(index)
+
+                        let tileClass = 'mini-tile'
+                        if (isStart) {
+                          tileClass += ' mini-tile-start'
+                        } else if (isOnPath) {
+                          tileClass += ' mini-tile-path'
+                        }
+
+                        return <div className={tileClass} key={index}></div>
+                      })}
                     </div>
                   </li>
                 ))}

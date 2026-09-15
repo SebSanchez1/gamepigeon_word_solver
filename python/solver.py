@@ -97,12 +97,14 @@ def neighbors(row, col, num_rows, num_cols):
 def find_words(board, trie_root):
     """board is a list of rows, each row a list of single lowercase letters,
     e.g. [["c","a","t","s"], [...], [...], [...]] for a 4x4 grid.
-    Returns a set of every valid word found on the board."""
+    Returns a dict mapping each found word to the ordered list of (row, col)
+    positions that spell it out — its "path" through the board."""
     num_rows = len(board)
     num_cols = len(board[0])
-    found_words = set()  # a set, not a list, so duplicate finds collapse automatically
+    # word -> [(row, col), (row, col), ...], one entry per unique word.
+    found_words = {}
 
-    def walk(row, col, trie_node, path_so_far, visited_tiles):
+    def walk(row, col, trie_node, path_so_far, path_positions, visited_tiles):
         letter = board[row][col]
 
         # If the Trie has no branch for this letter, no word down this path
@@ -113,9 +115,17 @@ def find_words(board, trie_root):
 
         next_node = trie_node.children[letter]
         new_path = path_so_far + letter
+        # A NEW list, not path_positions.append(...) — appending in place
+        # would corrupt the path for sibling branches of the search that
+        # share this same prefix, since they'd all be mutating one shared list.
+        new_positions = path_positions + [(row, col)]
 
         if next_node.is_word and len(new_path) >= MIN_WORD_LENGTH:
-            found_words.add(new_path)
+            # Only keep the FIRST path found for a given word — if the same
+            # word is spellable multiple ways on this board, we just need
+            # one path to illustrate it, not every possible one.
+            if new_path not in found_words:
+                found_words[new_path] = new_positions
 
         # Mark this tile as used for the current path, so the word can't
         # reuse the same physical tile twice.
@@ -123,7 +133,7 @@ def find_words(board, trie_root):
 
         for next_row, next_col in neighbors(row, col, num_rows, num_cols):
             if (next_row, next_col) not in visited_tiles:
-                walk(next_row, next_col, next_node, new_path, visited_tiles)
+                walk(next_row, next_col, next_node, new_path, new_positions, visited_tiles)
 
         # Backtracking: once we're done exploring everything that starts
         # with this tile, un-mark it — a DIFFERENT path (starting from a
@@ -133,7 +143,7 @@ def find_words(board, trie_root):
     # A word can start at any tile, so kick off a search from all 16.
     for row in range(num_rows):
         for col in range(num_cols):
-            walk(row, col, trie_root, "", set())
+            walk(row, col, trie_root, "", [], set())
 
     return found_words
 
@@ -145,8 +155,11 @@ def find_words(board, trie_root):
 def solve_grid(letters):
     """letters: a flat list of 16 single letters, reading left-to-right,
     top-to-bottom (row 0, then row 1, ...) — the same order the React grid
-    fills its tiles in. Returns a list of found words, longest first, then
-    alphabetically."""
+    fills its tiles in. Returns a list of dicts, longest word first then
+    alphabetically, each shaped like:
+        {"word": "cat", "path": [4, 0, 8]}
+    "path" is the list of FLAT indices (0-15, same order as `letters`) that
+    spell the word out in order — index 0 is where the word starts."""
     if len(letters) != 16:
         raise ValueError("solve_grid expects exactly 16 letters")
 
@@ -159,9 +172,19 @@ def solve_grid(letters):
 
     dictionary_words = load_dictionary()
     trie_root = build_trie(dictionary_words)
-    found_words = find_words(board, trie_root)
+    found_words = find_words(board, trie_root)  # word -> [(row, col), ...]
 
-    return sorted(found_words, key=lambda word: (-len(word), word))
+    sorted_words = sorted(found_words.keys(), key=lambda word: (-len(word), word))
+
+    results = []
+    for word in sorted_words:
+        positions = found_words[word]
+        # Convert each (row, col) back into a single flat index, the same
+        # scheme the 16-letter input list uses: index = row * 4 + col.
+        flat_path = [row * 4 + col for row, col in positions]
+        results.append({"word": word, "path": flat_path})
+
+    return results
 
 
 # ---------------------------------------------------------------------------
@@ -170,11 +193,16 @@ def solve_grid(letters):
 # ---------------------------------------------------------------------------
 if __name__ == "__main__":
     example_letters = list("CATSDOGRBIRDXFEY")  # a made-up 16-letter grid
-    words_found = solve_grid(example_letters)
+    results = solve_grid(example_letters)
 
     print("Grid:")
     for row_index in range(4):
         print(" ".join(example_letters[row_index * 4 : row_index * 4 + 4]))
 
-    print(f"\nFound {len(words_found)} words:")
-    print(", ".join(words_found))
+    print(f"\nFound {len(results)} words:")
+    print(", ".join(entry["word"] for entry in results))
+
+    # Show one example path in detail, to make the "path" field concrete.
+    if results:
+        example = results[0]
+        print(f"\nExample path for '{example['word']}': {example['path']}")

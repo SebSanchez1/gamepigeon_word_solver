@@ -197,3 +197,15 @@ body {
   background-color: #000000;
   border-radius: 1px;
 }
+
+/* Applied IN ADDITION TO .mini-tile (both classes are on the same element
+   at once), so this only needs to override the one property that changes:
+   background-color. Order in App.jsx makes sure isStart wins over isOnPath
+   when a tile is both — but a tile is only ever one or the other anyway. */
+.mini-tile-start {
+  background-color: #ffd700; /* yellow — the word's starting tile */
+}
+
+.mini-tile-path {
+  background-color: #ff0000; /* red — every other tile the word uses */
+}

@@ -47,6 +47,8 @@ def solve():
         # "Bad Request" — the client sent something we can't use.
         return jsonify({"error": "Expected a list of exactly 16 letters"}), 400
 
+    # Each entry looks like {"word": "cat", "path": [4, 0, 8]} — see
+    # solve_grid()'s docstring in solver.py for what "path" means.
     words = solve_grid(letters)
 
     # jsonify converts a Python dict into a proper JSON HTTP response,
