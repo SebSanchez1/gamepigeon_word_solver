@@ -8,6 +8,11 @@ const TABS = [
   { id: 'temp2', label: 'Temp' },
 ]
 
+// A reusable "16 slots" array for the tiny 4x4 grid icon shown next to each
+// found word. Defined once out here (not inside App) since it never
+// changes — no reason to recreate it on every render of every word.
+const MINI_GRID_CELLS = Array.from({ length: 16 })
+
 function App() {
   // useState gives us a piece of "state" — a value React remembers between
   // re-renders, plus a function to update it. `activeTab` is the current
@@ -186,7 +191,17 @@ function App() {
               <p>{words.length} words found</p>
               <ul className="word-list">
                 {words.map((word) => (
-                  <li key={word}>{word}</li>
+                  <li key={word} className="word-item">
+                    <span className="word-text">{word}</span>
+                    {/* A small, currently-decorative 4x4 grid — no letters,
+                        no path shown yet. Later this is where we'd highlight
+                        which tiles spell out this specific word. */}
+                    <div className="mini-grid">
+                      {MINI_GRID_CELLS.map((_, index) => (
+                        <div className="mini-tile" key={index}></div>
+                      ))}
+                    </div>
+                  </li>
                 ))}
               </ul>
             </div>

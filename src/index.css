@@ -150,7 +150,8 @@ body {
    after every 4th item — which is exactly "4 per row" ordering. */
 .word-list {
   list-style: none;
-  padding: 0;
+  padding: 0 20px;
+  /* left/right space so word boxes don't touch the screen edges */
   margin: 0;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -158,15 +159,41 @@ body {
   gap: 8px;
 }
 
-.word-list li {
+/* Each row: the word on the left, the mini grid icon on the right.
+   justify-content: space-between pushes the two apart to opposite edges. */
+.word-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
   background-color: #f0f0f0;
   padding: 8px;
   border-radius: 6px;
-  text-align: center;
+}
+
+.word-text {
   /* font-weight controls text thickness. Valid values run 1-1000; common
      ones are 400 = normal (the default), 600 = semi-bold, 700 = bold.
      (2000 was invalid here and silently ignored by the browser.) */
   font-weight: 600;
-  font-size: 500px;
+  font-size: 40px;
   /* browser default is ~16px */
+}
+
+/* The small 4x4 grid icon. Same repeat(4, ...) pattern as the real .grid,
+   just at a much smaller scale, with no letters inside the cells. */
+.mini-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 8px);
+  grid-template-rows: repeat(4, 8px);
+  gap: 2px;
+  flex-shrink: 0;
+  /* don't let it get squished if the word text is long */
+}
+
+.mini-tile {
+  width: 8px;
+  height: 8px;
+  background-color: #000000;
+  border-radius: 1px;
 }
