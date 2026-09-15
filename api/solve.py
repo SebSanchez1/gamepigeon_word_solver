@@ -14,15 +14,21 @@ like Flask: a class named exactly `handler`, inheriting from
 BaseHTTPRequestHandler (part of Python's standard library — no extra
 packages to install), with one method per HTTP method you want to support.
 
-solver.py and words.txt live right here in api/, not in python/, because
+_solver.py and words.txt live right here in api/, not in python/, because
 Vercel only guarantees that files INSIDE the same /api folder as a
 function get deployed alongside it.
+
+_solver.py is named with a leading underscore on purpose: Vercel turns
+every .py file inside /api into its own route UNLESS the filename starts
+with "_" — without that prefix, Vercel would also try (and fail) to treat
+this helper file as its own function, since it doesn't define an `app`,
+`application`, or `handler`.
 """
 
 import json
 from http.server import BaseHTTPRequestHandler
 
-from solver import solve_grid
+from _solver import solve_grid
 
 
 class handler(BaseHTTPRequestHandler):

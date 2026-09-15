@@ -20,9 +20,12 @@ import os
 MIN_WORD_LENGTH = 3
 
 # The dictionary file sits next to this script, so we build an absolute
-# path from this file's own location. That way solver.py works no matter
-# what folder you happen to run it FROM.
-WORDS_FILE = os.path.join(os.path.dirname(__file__), "words.txt")
+# path from this file's own location. os.path.abspath() guarantees a full,
+# unambiguous path regardless of what __file__ happens to look like in a
+# given environment (a bare filename vs. a full path) — safer than relying
+# on __file__ alone, since Vercel's docs specifically warn that relative
+# paths resolve against your PROJECT ROOT, not this file's own folder.
+WORDS_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "words.txt")
 
 
 # ---------------------------------------------------------------------------

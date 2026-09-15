@@ -1,6 +1,6 @@
 """
 server.py — LOCAL DEVELOPMENT ONLY. A small Flask web server that exposes
-solver.py over HTTP, so the React app (running in the browser) can call it
+_solver.py over HTTP, so the React app (running in the browser) can call it
 while you're running "npm run dev" on your own machine.
 
 In production (once deployed to Vercel), this file isn't used at all —
@@ -8,10 +8,10 @@ api/solve.py takes over that job there, using Vercel's own serverless
 function format instead of a Flask server. See api/solve.py's docstring
 for why that one looks so different from this one.
 
-Why this file needs to exist at all: solver.py is just a Python function.
+Why this file needs to exist at all: _solver.py is just a Python function.
 The browser can't call a Python function directly — it can only make HTTP
 requests. This file's only job is to sit and listen for those requests,
-call solve_grid() from solver.py, and send the result back as JSON.
+call solve_grid() from _solver.py, and send the result back as JSON.
 
 Run it with:
     python/.venv/bin/python server.py
@@ -24,14 +24,14 @@ import sys
 # pyrefly: ignore [missing-import]
 from flask import Flask, jsonify, request
 
-# solver.py actually lives in ../api (see api/solve.py's docstring for why),
-# not in this folder — so before we can `import solver`, Python needs to be
+# _solver.py actually lives in ../api (see api/solve.py's docstring for
+# why), not in this folder — so before we can import it, Python needs to be
 # told to also look inside that folder. sys.path is the list of folders
 # Python searches through when you write an `import` statement; inserting
 # our target folder at the front makes it the first place checked.
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "api"))
 # pyrefly: ignore [missing-import]
-from solver import solve_grid
+from _solver import solve_grid
 
 # Creates the actual web server application. __name__ just tells Flask
 # where this file lives, so it can find things like templates later if we
