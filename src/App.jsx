@@ -117,8 +117,15 @@ function App() {
       setWords(data.words)
     } catch (err) {
       // This runs if fetch() itself fails (e.g. the Python server isn't
-      // running at all) or if we threw the error above.
-      setError('Could not reach the solver. Is the Python server running?')
+      // reachable) or if we threw the error above. The hint about starting
+      // the local server only makes sense in dev — in production there's
+      // no separate server for the user to start, so showing that message
+      // there would just be confusing.
+      setError(
+        import.meta.env.DEV
+          ? 'Could not reach the solver. Is the Python server running?'
+          : 'Could not reach the solver. Please try again.',
+      )
     } finally {
       // finally always runs, whether the request succeeded or failed —
       // guarantees we never get stuck showing "Solving..." forever.

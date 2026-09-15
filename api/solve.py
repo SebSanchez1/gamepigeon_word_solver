@@ -26,7 +26,17 @@ this helper file as its own function, since it doesn't define an `app`,
 """
 
 import json
+import os
+import sys
 from http.server import BaseHTTPRequestHandler
+
+# Explicitly add this file's own folder to Python's module search path
+# before importing _solver. This shouldn't be necessary in a normal script,
+# but Vercel loads this file in a way that doesn't reliably include its own
+# folder automatically — without this line, `from _solver import ...` can
+# fail with "could not import api/solve.py" the moment Vercel tries to load
+# this file at all, before any of our own code even runs.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from _solver import solve_grid
 
