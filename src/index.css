@@ -132,25 +132,34 @@ body {
   color: #d00000;
 }
 
+/* align-self: stretch (same trick as .tab-bar above) makes .results ignore
+   .page's centering and take the full screen width instead, so the word
+   grid below has the full width to lay its 4 columns across. */
 .results {
+  align-self: stretch;
   text-align: center;
 }
 
-/* The found-words list. Plain <ul> elements come with default bullet
-   points and left padding — removed here to lay them out ourselves. */
+/* The found-words list, laid out as a CSS Grid with exactly 4 columns.
+   Grid items automatically fill left-to-right, wrapping to a new row
+   after every 4th item — which is exactly "4 per row" ordering. */
 .word-list {
   list-style: none;
   padding: 0;
   margin: 0;
-  display: flex;
-  flex-wrap: wrap; /* let words wrap onto multiple lines */
-  justify-content: center;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 4 equal-width columns spanning the full row */
   gap: 8px;
-  max-width: 600px;
 }
 
 .word-list li {
   background-color: #f0f0f0;
-  padding: 4px 10px;
+  padding: 8px;
   border-radius: 6px;
+  text-align: center;
+  /* font-weight controls text thickness. Common values: 400 = normal
+     (the default), 600 = semi-bold, 700 = bold. Using a number instead of
+     the word "bold" lets you pick finer shades of thickness. */
+  font-weight: 600;
+  font-size: 24px; /* browser default is ~16px — this should be clearly bigger now */
 }
