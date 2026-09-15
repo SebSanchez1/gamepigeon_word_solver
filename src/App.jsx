@@ -30,6 +30,59 @@ function App() {
   // keyboard focus. inputRefs.current[i] will be tile i's real DOM node.
   const inputRefs = useRef([])
 
+  // Results of calling the Python solver. `words` is `null` until we've
+  // solved at least once (so we can tell "never tried" apart from "tried,
+  // found zero words"). `isLoading` drives the button's text/disabled
+  // state while we're waiting on the network request. `error` holds a
+  // message to show if something goes wrong (empty tiles, server down).
+  const [words, setWords] = useState(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState(null)
+
+  // Called when the Calculate button is clicked. It's an `async` function
+  // because talking to the server takes time — we don't want to freeze
+  // the page while waiting, so this runs without blocking anything else.
+  async function handleCalculate() {
+    setError(null)
+
+    // Don't even bother contacting the server if the grid isn't full —
+    // solve_grid() on the Python side requires exactly 16 letters.
+    if (letters.some((letter) => letter === '')) {
+      setError('Fill in all 16 boxes first.')
+      return
+    }
+
+    setIsLoading(true)
+    try {
+      // fetch() sends an HTTP request. `await` pauses this function (not
+      // the whole app) until the response comes back.
+      const response = await fetch('http://localhost:8000/solve', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        // The server expects JSON text, not a raw JS array/object, so we
+        // convert `letters` into a JSON string before sending it.
+        body: JSON.stringify({ letters }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Server responded with an error')
+      }
+
+      // The response body arrives as JSON text; .json() parses it back
+      // into a normal JS object, e.g. { words: ["cat", "act", ...] }.
+      const data = await response.json()
+      setWords(data.words)
+    } catch (err) {
+      // This runs if fetch() itself fails (e.g. the Python server isn't
+      // running at all) or if we threw the error above.
+      setError('Could not reach the solver. Is the Python server running?')
+    } finally {
+      // finally always runs, whether the request succeeded or failed —
+      // guarantees we never get stuck showing "Solving..." forever.
+      setIsLoading(false)
+    }
+  }
+
   // Called whenever the user types in tile number `index`.
   // `rawValue` is whatever the browser's <input> currently contains.
   function handleLetterChange(index, rawValue) {
@@ -117,6 +170,29 @@ function App() {
         )}
         {/* No content for 'temp1' or 'temp2' — nothing renders for those. */}
       </div>
+
+      {activeTab === 'wordhunt' && (
+        <>
+          <button className="calculate-button" onClick={handleCalculate} disabled={isLoading}>
+            {isLoading ? 'Solving...' : 'Calculate'}
+          </button>
+
+          {error && <p className="error-message">{error}</p>}
+
+          {/* Only show results once we actually have some (words !== null),
+              and only if there was no error. */}
+          {words !== null && !error && (
+            <div className="results">
+              <p>{words.length} words found</p>
+              <ul className="word-list">
+                {words.map((word) => (
+                  <li key={word}>{word}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </>
+      )}
     </div>
   )
 }
