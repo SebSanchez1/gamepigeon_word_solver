@@ -11,7 +11,8 @@ body {
 #root {
   min-height: 100vh;
   display: flex;
-  padding-top: 60px; /* fixed distance from the top, instead of vertical centering */
+  padding-top: 60px;
+  /* fixed distance from the top, instead of vertical centering */
 }
 
 /* Wraps everything on screen (title + tabs + grid), stacked vertically.
@@ -20,7 +21,8 @@ body {
 .page {
   display: flex;
   flex-direction: column;
-  align-items: center; /* keeps the title and grid centered */
+  align-items: center;
+  /* keeps the title and grid centered */
   gap: 20px;
   /* space between the title and the grid below it */
   width: 100%;
@@ -50,7 +52,8 @@ body {
   font-size: 16px;
   background: none;
   border: none;
-  border-bottom: 3px solid transparent; /* reserve space so layout doesn't shift when active */
+  border-bottom: 3px solid transparent;
+  /* reserve space so layout doesn't shift when active */
   cursor: pointer;
   color: #666;
 }
@@ -59,7 +62,8 @@ body {
 .tab-active {
   color: #000;
   font-weight: bold;
-  border-bottom: 3px solid #7e14ff; /* matches the purple from the favicon */
+  border-bottom: 3px solid #7e14ff;
+  /* matches the purple from the favicon */
 }
 
 /* Holds whatever the active tab shows (the grid, or nothing). */
@@ -99,7 +103,8 @@ body {
   font-weight: bold;
   text-align: center;
   text-transform: uppercase;
-  caret-color: #ffffff; /* the blinking text cursor, otherwise invisible on black */
+  caret-color: #ffffff;
+  /* the blinking text cursor, otherwise invisible on black */
 }
 
 /* Highlight the tile currently being typed into, instead of the browser's
@@ -148,7 +153,8 @@ body {
   padding: 0;
   margin: 0;
   display: grid;
-  grid-template-columns: repeat(4, 1fr); /* 4 equal-width columns spanning the full row */
+  grid-template-columns: repeat(4, 1fr);
+  /* 4 equal-width columns spanning the full row */
   gap: 8px;
 }
 
@@ -157,9 +163,10 @@ body {
   padding: 8px;
   border-radius: 6px;
   text-align: center;
-  /* font-weight controls text thickness. Common values: 400 = normal
-     (the default), 600 = semi-bold, 700 = bold. Using a number instead of
-     the word "bold" lets you pick finer shades of thickness. */
+  /* font-weight controls text thickness. Valid values run 1-1000; common
+     ones are 400 = normal (the default), 600 = semi-bold, 700 = bold.
+     (2000 was invalid here and silently ignored by the browser.) */
   font-weight: 600;
-  font-size: 24px; /* browser default is ~16px — this should be clearly bigger now */
+  font-size: 500px;
+  /* browser default is ~16px */
 }
