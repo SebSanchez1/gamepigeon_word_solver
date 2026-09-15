@@ -8,10 +8,11 @@ requests. This file's only job is to sit and listen for those requests,
 call solve_grid() from solver.py, and send the result back as JSON.
 
 Run it with:
-    .venv/bin/python server.py
+    python/.venv/bin/python server.py
 It will listen at http://localhost:8000
 """
 
+# pyrefly: ignore [missing-import]
 from flask import Flask, jsonify, request
 
 from solver import solve_grid
@@ -53,15 +54,21 @@ def solve():
     return jsonify({"words": words})
 
 
-# Vite's dev server runs on http://localhost:5173, this Flask server runs
-# on http://localhost:8000 — different ports count as different "origins"
-# to the browser, and browsers block cross-origin requests by default for
-# security (this protection is called CORS). Since WE control both sides
-# here and know the request is legitimate, we explicitly allow it by
-# adding this header to every response this server sends.
+# Vite's dev server usually runs on http://localhost:5173, but if that port
+# is already busy (e.g. an old "npm run dev" left running in another tab),
+# Vite silently picks the next free one — 5174, 5175, etc. Different ports
+# count as different "origins" to the browser, and browsers block
+# cross-origin requests by default for security (this protection is called
+# CORS). Rather than hardcode one exact port and have things mysteriously
+# break whenever Vite picks a different one, we read whatever origin the
+# browser actually sent (request.origin) and, as long as it's some flavor
+# of localhost, echo it straight back — this only ever runs on your own
+# machine during development, so trusting any localhost port is safe here.
 @app.after_request
 def allow_frontend_origin(response):
-    response.headers["Access-Control-Allow-Origin"] = "http://localhost:5173"
+    origin = request.origin or ""
+    if origin.startswith("http://localhost:") or origin.startswith("http://127.0.0.1:"):
+        response.headers["Access-Control-Allow-Origin"] = origin
     response.headers["Access-Control-Allow-Headers"] = "Content-Type"
     response.headers["Access-Control-Allow-Methods"] = "POST"
     return response
