@@ -145,17 +145,17 @@ body {
   text-align: center;
 }
 
-/* The found-words list, laid out as a CSS Grid with exactly 4 columns.
+/* The found-words list, laid out as a CSS Grid with exactly 3 columns.
    Grid items automatically fill left-to-right, wrapping to a new row
-   after every 4th item — which is exactly "4 per row" ordering. */
+   after every 3rd item — which is exactly "3 per row" ordering. */
 .word-list {
   list-style: none;
   padding: 0 20px;
   /* left/right space so word boxes don't touch the screen edges */
   margin: 0;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  /* 4 equal-width columns spanning the full row */
+  grid-template-columns: repeat(3, 1fr);
+  /* 3 equal-width columns spanning the full row */
   gap: 8px;
 }
 
@@ -185,9 +185,9 @@ body {
 .mini-grid {
   position: relative; /* an "anchor" so .mini-grid-path can position itself relative to THIS element, not the whole page */
   display: grid;
-  grid-template-columns: repeat(4, 8px);
-  grid-template-rows: repeat(4, 8px);
-  gap: 2px;
+  grid-template-columns: repeat(4, 16px);
+  grid-template-rows: repeat(4, 16px);
+  gap: 4px;
   flex-shrink: 0;
   /* don't let it get squished if the word text is long */
 }
@@ -207,10 +207,10 @@ body {
 }
 
 .mini-tile {
-  width: 8px;
-  height: 8px;
+  width: 16px;
+  height: 16px;
   background-color: #000000;
-  border-radius: 1px;
+  border-radius: 2px;
 }
 
 /* Applied IN ADDITION TO .mini-tile (both classes are on the same element

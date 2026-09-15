@@ -13,15 +13,19 @@ const TABS = [
 // changes — no reason to recreate it on every render of every word.
 const MINI_GRID_CELLS = Array.from({ length: 16 })
 
-// These two numbers must match the CSS: .mini-tile is 8px square, .mini-grid
-// has an 8px gap between tiles. Keeping them here as named constants (instead
-// of "magic numbers" scattered in the math below) means if the CSS size ever
-// changes, there's one obvious place to update the matching JS math too.
-const MINI_TILE_SIZE = 8
-const MINI_TILE_GAP = 2
+// These two numbers must match the CSS: .mini-tile's width/height and
+// .mini-grid's gap. Keeping them here as named constants (instead of "magic
+// numbers" scattered in the math below) means if the CSS size ever changes,
+// there's one obvious place to update the matching JS math too.
+const MINI_TILE_SIZE = 16
+const MINI_TILE_GAP = 4
 // How far apart two tile centers are, center-to-center: one tile's width
 // plus one gap.
 const MINI_TILE_STEP = MINI_TILE_SIZE + MINI_TILE_GAP
+// The mini-grid's total pixel size (4 tiles + 3 gaps between them — note
+// there's one FEWER gap than tiles). Used for the SVG's viewBox so the path
+// line's coordinates always line up with the tiles, no matter their size.
+const MINI_GRID_PIXELS = MINI_TILE_SIZE * 4 + MINI_TILE_GAP * 3
 
 // Converts a flat 0-15 grid index into the pixel (x, y) coordinates of that
 // tile's CENTER, for drawing the path line through it.
@@ -249,7 +253,7 @@ function App() {
                           4x4 area). viewBox uses the grid's actual pixel
                           size — 4 tiles + 3 gaps = 38px — so the polyline's
                           coordinates line up with the real tile centers. */}
-                      <svg className="mini-grid-path" viewBox="0 0 38 38">
+                      <svg className="mini-grid-path" viewBox={`0 0 ${MINI_GRID_PIXELS} ${MINI_GRID_PIXELS}`}>
                         <polyline
                           points={pathToPolylinePoints(entry.path)}
                           fill="none"
