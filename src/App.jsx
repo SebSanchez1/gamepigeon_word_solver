@@ -67,7 +67,7 @@ function App() {
 
   return (
     <div className="page">
-      <h1 className="title">GamePigeon Word Solver</h1>
+      <h1 className="title">Game Pigeon Word Solver</h1>
 
       {/* Tab bar: one button per entry in TABS. */}
       <div className="tab-bar">
