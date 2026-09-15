@@ -13,6 +13,32 @@ const TABS = [
 // changes — no reason to recreate it on every render of every word.
 const MINI_GRID_CELLS = Array.from({ length: 16 })
 
+// These two numbers must match the CSS: .mini-tile is 8px square, .mini-grid
+// has an 8px gap between tiles. Keeping them here as named constants (instead
+// of "magic numbers" scattered in the math below) means if the CSS size ever
+// changes, there's one obvious place to update the matching JS math too.
+const MINI_TILE_SIZE = 8
+const MINI_TILE_GAP = 2
+// How far apart two tile centers are, center-to-center: one tile's width
+// plus one gap.
+const MINI_TILE_STEP = MINI_TILE_SIZE + MINI_TILE_GAP
+
+// Converts a flat 0-15 grid index into the pixel (x, y) coordinates of that
+// tile's CENTER, for drawing the path line through it.
+function miniTileCenter(index) {
+  const col = index % 4
+  const row = Math.floor(index / 4)
+  const x = col * MINI_TILE_STEP + MINI_TILE_SIZE / 2
+  const y = row * MINI_TILE_STEP + MINI_TILE_SIZE / 2
+  return [x, y]
+}
+
+// Turns a word's path (e.g. [4, 0, 8]) into the "x1,y1 x2,y2 x3,y3" string
+// format an SVG <polyline> expects for its `points` attribute.
+function pathToPolylinePoints(path) {
+  return path.map((index) => miniTileCenter(index).join(',')).join(' ')
+}
+
 function App() {
   // useState gives us a piece of "state" — a value React remembers between
   // re-renders, plus a function to update it. `activeTab` is the current
@@ -216,6 +242,23 @@ function App() {
 
                         return <div className={tileClass} key={index}></div>
                       })}
+
+                      {/* An SVG overlay drawn on top of the tiles (CSS gives
+                          .mini-grid position: relative and this svg
+                          position: absolute, so it sits exactly over the
+                          4x4 area). viewBox uses the grid's actual pixel
+                          size — 4 tiles + 3 gaps = 38px — so the polyline's
+                          coordinates line up with the real tile centers. */}
+                      <svg className="mini-grid-path" viewBox="0 0 38 38">
+                        <polyline
+                          points={pathToPolylinePoints(entry.path)}
+                          fill="none"
+                          stroke="#ffffff"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
                     </div>
                   </li>
                 ))}

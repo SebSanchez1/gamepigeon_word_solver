@@ -183,12 +183,27 @@ body {
 /* The small 4x4 grid icon. Same repeat(4, ...) pattern as the real .grid,
    just at a much smaller scale, with no letters inside the cells. */
 .mini-grid {
+  position: relative; /* an "anchor" so .mini-grid-path can position itself relative to THIS element, not the whole page */
   display: grid;
   grid-template-columns: repeat(4, 8px);
   grid-template-rows: repeat(4, 8px);
   gap: 2px;
   flex-shrink: 0;
   /* don't let it get squished if the word text is long */
+}
+
+/* The path line, drawn on top of the tiles. position: absolute + matching
+   top/left/width/height makes it overlay exactly on top of .mini-grid
+   without taking up its own space in the grid layout.
+   pointer-events: none means it never blocks clicks on anything beneath it
+   (not that anything's clickable here yet, but good habit either way). */
+.mini-grid-path {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
 }
 
 .mini-tile {
